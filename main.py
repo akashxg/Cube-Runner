@@ -9,6 +9,9 @@ HS_FILE = "highscore.txt"
 # Initialize pygame
 pygame.init()
 
+# Frequency, size, channels, buffersize
+pygame.mixer.pre_init(44100, 16, 2, 4096)
+
 # Load in the crashing sound and game theme song
 crash_sound = pygame.mixer.Sound('assets/sounds/crash.wav')
 pygame.mixer.music.load('assets/sounds/dhoom.wav')
@@ -29,7 +32,7 @@ bright_green = (0,255,0)
 block_color = (53,115,255)
 
 # Setting caption for app window
-pygame.display.set_caption('Cube Field')
+pygame.display.set_caption('Cube Runner')
 clock = pygame.time.Clock()
 
 # Loading in player object image
@@ -60,6 +63,9 @@ def paused():
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_p:
 					unpause()
+				if event.key == pygame.K_q:
+					pygame.quit()
+					quit()
 
 		button("Continue",150,450,150,60,green,bright_green,unpause)
 		button("Quit",550,450,150,60,red,bright_red,quitgame)
@@ -118,6 +124,13 @@ def crash():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				quit()
+
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_p:
+					game_loop()
+				if event.key == pygame.K_q:
+					pygame.quit()
+					quit()
 
 		button("Play Again",150,450,150,60,green,bright_green,game_loop)
 		button("Quit",550,450,150,60,red,bright_red,quitgame)
