@@ -9,7 +9,7 @@ cx_Freeze.setup(
 	version="22.99",
 	name = "Cube Runner",
 	options = {"build_exe": {"packages": ["pygame"],
-							 "include_files":["assets\\images\\new_triangle.png"]}},
+							 "include_files":["new_triangle.png", "icon_triangle.png", "dhoom.wav", "crash.wav"]}},
 	executables = executables
 
 	)
