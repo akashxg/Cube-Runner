@@ -26,7 +26,7 @@ gameDisplay = pygame.display.set_mode((display_width, display_height))
 
 # Color variables to be used for background and objects
 black = (32,32,32)
-white = (255,255,255)
+white = (224,224,224)
 red = (200,0,0)
 bright_red = (255,0,0)
 grey = (169,169,169)
@@ -60,7 +60,7 @@ def message_display(text):
 
 # For text objects
 def text_objects(text, font):
-	textSurface	= font.render(text, True, black)
+	textSurface	= font.render(text, True, white)
 	return textSurface, textSurface.get_rect()
 
 # Pauses game
