@@ -1,3 +1,6 @@
+# Shoutout to sentdex for introducing me to pygame
+# Coded by: Akash Gheewala
+
 # Importing modules
 import pygame
 import random
@@ -13,8 +16,8 @@ pygame.init()
 pygame.mixer.pre_init(44100, 16, 2, 4096)
 
 # Load in the crashing sound and game theme song
-crash_sound = pygame.mixer.Sound('assets/sounds/crash.wav')
-pygame.mixer.music.load('assets/sounds/dhoom.wav')
+crash_sound = pygame.mixer.Sound('crash.wav')
+pygame.mixer.music.load('dhoom.wav')
 
 # Window dimension variables
 display_width = 800
@@ -36,14 +39,17 @@ pygame.display.set_caption('Cube Runner')
 clock = pygame.time.Clock()
 
 # Loading in player object image
-carImg = pygame.image.load('assets/images/new_triangle.png')
-gameIcon = pygame.image.load('assets/images/icon_triangle.png')
+carImg = pygame.image.load('new_triangle.png')
+gameIcon = pygame.image.load('icon_triangle.png')
 
 # Setting app window icon
 pygame.display.set_icon(gameIcon)
 
 pause = False
 
+"""
+***** FUNCTIONS *****
+"""
 # Pauses game
 def paused():
 
@@ -97,10 +103,11 @@ def blocks_dodged(count):
 	gameDisplay.blit(text, (0, 0))
 
 # Creating the cubes
-def blocks(blockx, blocky, blockw, blockh, color):
-	pygame.draw.rect(gameDisplay, color, [blockx, blocky, blockw, blockh])
+def blocks(block_x_list, blocky, blockw, blockh, color):
+	for block_x in block_x_list:
+		pygame.draw.rect(gameDisplay, color, [block_x, blocky, blockw, blockh])
 
-# Displays player onject image
+# Displays player object image
 def car(x,y):
 	gameDisplay.blit(carImg, (x,y))
 
@@ -165,6 +172,12 @@ def game_intro():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				quit()
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_p:
+					game_loop()
+				if event.key == pygame.K_q:
+					pygame.quit()
+					quit()
 
 		gameDisplay.fill(grey)
 		largeText = pygame.font.Font('freesansbold.ttf', 115)
@@ -190,14 +203,16 @@ def game_loop():
 	y = (display_height * 0.8)
 
 	# Change in the players position
-	x_change = 0
+	car_x_change = 0
 
 	# Variables for the blocks that will be generated
 	block_startx = random.randrange(0, display_width)
 	block_starty = -600
 	block_speed = 5
-	block_width = random.randrange(100,150)
+	block_width = random.randrange(100,101)
 	block_height = 100
+	block_count = 1
+	block_x_list = [random.randrange(0, display_width - block_width)] 
 
 	# Amount of cubes dodged
 	dodged = 0
@@ -221,9 +236,9 @@ def game_loop():
 
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
-					x_change += -7
+					car_x_change += -7
 				elif event.key == pygame.K_RIGHT:
-					x_change += 7
+					car_x_change += 7
 				if event.key == pygame.K_p:
 					pause = True
 					paused()
@@ -232,12 +247,12 @@ def game_loop():
 
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-					x_change = 0
+					car_x_change = 0
 
-		x += x_change
+		x += car_x_change
 
 		gameDisplay.fill(grey)
-		blocks(block_startx, block_starty, block_width, block_height, block_color)
+		blocks(block_x_list, block_starty, block_width, block_height, block_color)
 		block_starty += block_speed
 		car(x,y)
 		blocks_dodged(dodged)
@@ -249,16 +264,27 @@ def game_loop():
 
 		# Cubes will randomly appear along the x-axis of the window
 		if block_starty > display_height:
+			block_x_list = []
 			block_starty = 0 - block_height
-			block_startx = random.randrange(0, display_width)
+			for x in range(block_count):
+				block_x_new = random.randrange(0, display_width - block_width)
+				block_x_list.append(block_x_new)
+
+			blocks(block_x_list, block_starty, block_width, block_height, block_color)
+			#block_startx = random.randrange(0, display_width)
 			dodged += 1
 			if dodged % 5 == 0:
 				block_speed += 1
 
+			if dodged % 10 == 0:
+				if block_count < 4:
+					block_count += 1
+
 		# Crashing the user if they hit a cube
 		if y < block_starty + block_height:
-			if x > block_startx and x < block_startx + block_width or x + 85 > block_startx and x + 85 < block_startx + block_width:
-				crash()
+			for block_startx in block_x_list:
+				if x > block_startx and x < block_startx + block_width or x + 85 > block_startx and x + 85 < block_startx + block_width:
+					crash()
 
 		pygame.display.update()
 		clock.tick(60)
