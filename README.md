@@ -7,7 +7,7 @@ https://www.dropbox.com/s/s0sdpksisfks78g/Cube%20Runner-22.99-amd64.zip?dl=0
 - install and run main.exe to play the game
 
 # Controls:
-Left/Right Arrow key
-p - pause & unpause
-q - quit
-m - mute
+- left/right arrows: move
+- p: pause & unpause
+- q: quit
+- m: mute
