@@ -25,7 +25,7 @@ display_height = 600
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 
 # Color variables to be used for background and objects
-black = (0,0,0)
+black = (32,32,32)
 white = (255,255,255)
 red = (200,0,0)
 bright_red = (255,0,0)
@@ -50,6 +50,19 @@ pause = False
 """
 ***** FUNCTIONS *****
 """
+
+# Displays text
+def message_display(text):
+	largeText = pygame.font.Font('freesansbold.ttf', 50)
+	TextSurf, TextRect = text_objects(text, largeText)
+	TextRect.center = ((display_width / 2), (180))
+	gameDisplay.blit(TextSurf, TextRect)
+
+# For text objects
+def text_objects(text, font):
+	textSurface	= font.render(text, True, black)
+	return textSurface, textSurface.get_rect()
+
 # Pauses game
 def paused():
 
@@ -111,10 +124,6 @@ def blocks(block_x_list, blocky, blockw, blockh, color):
 def car(x,y):
 	gameDisplay.blit(carImg, (x,y))
 
-def text_objects(text, font):
-	textSurface	= font.render(text, True, white)
-	return textSurface, textSurface.get_rect()
-
 # Crash function 
 def crash():
 
@@ -165,7 +174,12 @@ def button(msg,x,y,w,h,ic,ac,action=None):
 # Display for start of program
 def game_intro():
 
-	#display_msg("Ghee Inc.", 40, bright_red, (display_width / 2), (display_height * 0.1))
+	gameDisplay.fill(grey)
+	message_display("GheeGames Presents")
+	largeText = pygame.font.Font('freesansbold.ttf', 115)
+	TextSurf, TextRect = text_objects("Cube Runner", largeText)
+	TextRect.center = ((display_width / 2), (display_height / 2))
+	gameDisplay.blit(TextSurf, TextRect)
 
 	while True:
 		for event in pygame.event.get():
@@ -178,12 +192,6 @@ def game_intro():
 				if event.key == pygame.K_q:
 					pygame.quit()
 					quit()
-
-		gameDisplay.fill(grey)
-		largeText = pygame.font.Font('freesansbold.ttf', 115)
-		TextSurf, TextRect = text_objects("Cube Runner", largeText)
-		TextRect.center = ((display_width / 2), (display_height / 2))
-		gameDisplay.blit(TextSurf, TextRect)
 
 		button("Start",150,450,150,60,green,bright_green,game_loop)
 		button("Quit",550,450,150,60,red,bright_red,quitgame)
@@ -199,8 +207,8 @@ def game_loop():
 	pygame.mixer.music.play(-1)
 
 	# Variables for player object starting position
-	x = (display_width * 0.35)
-	y = (display_height * 0.8)
+	x = (display_width / 2) - (85/2)
+	y = (display_height * 0.85)
 
 	# Change in the players position
 	car_x_change = 0
@@ -251,16 +259,15 @@ def game_loop():
 
 		x += car_x_change
 
-		gameDisplay.fill(grey)
-		blocks(block_x_list, block_starty, block_width, block_height, block_color)
-		block_starty += block_speed
-		car(x,y)
-		blocks_dodged(dodged)
-		high_score(highscore)
-
 		# Crashing the player if they go past the window borders
 		if x > display_width - 85 or x < 0:
 			crash()
+
+		# Crashing the user if they hit a cube
+		if y < block_starty + block_height:
+			for block_startx in block_x_list:
+				if x > block_startx and x < block_startx + block_width or x + 85 > block_startx and x + 85 < block_startx + block_width:
+					crash()
 
 		# Cubes will randomly appear along the x-axis of the window
 		if block_starty > display_height:
@@ -271,7 +278,6 @@ def game_loop():
 				block_x_list.append(block_x_new)
 
 			blocks(block_x_list, block_starty, block_width, block_height, block_color)
-			#block_startx = random.randrange(0, display_width)
 			dodged += 1
 			if dodged % 5 == 0:
 				block_speed += 1
@@ -280,11 +286,13 @@ def game_loop():
 				if block_count < 4:
 					block_count += 1
 
-		# Crashing the user if they hit a cube
-		if y < block_starty + block_height:
-			for block_startx in block_x_list:
-				if x > block_startx and x < block_startx + block_width or x + 85 > block_startx and x + 85 < block_startx + block_width:
-					crash()
+		# Displaying everything onto screen
+		gameDisplay.fill(grey)
+		car(x,y)
+		blocks(block_x_list, block_starty, block_width, block_height, block_color)
+		block_starty += block_speed
+		blocks_dodged(dodged)
+		high_score(highscore)
 
 		pygame.display.update()
 		clock.tick(60)
